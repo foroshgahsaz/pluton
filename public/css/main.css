@@ -61,6 +61,10 @@
   --clb-color-fill: rgba(131, 137, 152, 0.08);
   --clb-color-border: rgba(17, 16, 19, 0.1);
   --clb-color-success: #29a366;
+  --clb-color-surface: #212130;
+  --clb-color-surface-hover: #2a2a3c;
+  --clb-color-surface-muted: rgba(255, 255, 255, 0.08);
+  --clb-color-surface-border: rgba(255, 255, 255, 0.1);
   --clb-text-color: var(--clb-color-black-light);
   --clb-spacer-1: 0.5rem;
   --clb-spacer-2: 1rem;
@@ -504,15 +508,15 @@ body.cursor-hover .circle-cursor-inner svg { width: 14px; height: 14px; opacity:
   color: #5bf2ff;
 }
 
-/* کارت‌های ۲ و ۳ — خاکستری روشن */
+/* کارت‌های ۲ و ۳ */
 .service-table--muted {
-  background: rgba(79, 116, 147, 0.06);
+  background: var(--clb-color-surface);
 }
 .service-table--muted:hover {
-  background: rgba(79, 116, 147, 0.12);
+  background: var(--clb-color-surface-hover);
 }
 .service-table--muted .icon-group.-contained {
-  background: rgba(79, 116, 147, 0.08);
+  background: var(--clb-color-surface-muted);
   color: #4200ff;
   border-radius: 20px;
 }
@@ -522,6 +526,10 @@ body.cursor-hover .circle-cursor-inner svg { width: 14px; height: 14px; opacity:
 .service-table--muted h4.title {
   border-bottom: none;
   padding-bottom: 0;
+  color: #f0f1f3;
+}
+.service-table--muted .service-table-features li {
+  color: rgba(255, 255, 255, 0.72);
 }
 .icon-group.-contained {
   display: inline-flex;
@@ -599,11 +607,13 @@ body.cursor-hover .circle-cursor-inner svg { width: 14px; height: 14px; opacity:
 /* Accordion */
 .accordion { margin-top: 2rem; }
 .accordion.-contained {
-  background: rgba(79, 116, 147, 0.06);
+  background: var(--clb-color-surface);
   border-radius: 20px;
   padding: 0.5rem 1.25rem;
 }
-.accordion.-contained .accordion-item { border-bottom-color: rgba(79, 116, 147, 0.12); }
+.accordion.-contained .accordion-item { border-bottom-color: var(--clb-color-surface-border); }
+.accordion.-contained .accordion-trigger { color: #f0f1f3; }
+.accordion.-contained .accordion-panel-inner { color: rgba(255, 255, 255, 0.68); }
 .accordion.-contained .accordion-item:last-child { border-bottom: none; }
 .accordion-item { border-bottom: 1px solid var(--clb-color-border); }
 .accordion-trigger {
@@ -627,10 +637,10 @@ body.cursor-hover .circle-cursor-inner svg { width: 14px; height: 14px; opacity:
 /* Stats + Core Features (Ohio Demo 5) */
 .stats-features-section {
   padding: 5rem 0;
-  background: rgba(79, 116, 147, 0.06);
+  background: var(--clb-color-surface);
 }
 .stats-features-heading { text-align: center; margin-bottom: 0; }
-.stats-features-heading .title { margin-bottom: 0; }
+.stats-features-heading .title { margin-bottom: 0; color: #f0f1f3; }
 
 .stats-box {
   background: var(--clb-color-white);
@@ -915,8 +925,8 @@ body.cursor-hover .circle-cursor-inner svg { width: 14px; height: 14px; opacity:
 .reviews-tabs .tabs-nav {
   display: inline-flex;
   position: relative;
-  background: rgba(79, 116, 147, 0.06);
-  outline: 2px solid rgba(79, 116, 147, 0.06);
+  background: var(--clb-color-surface);
+  outline: 2px solid var(--clb-color-surface);
   border-radius: 0.5rem;
   padding: 2px;
   margin-bottom: 3rem;
@@ -925,7 +935,7 @@ body.cursor-hover .circle-cursor-inner svg { width: 14px; height: 14px; opacity:
   min-height: 2.75rem;
   padding: 0 1.5rem;
   font-size: 0.9375rem;
-  color: var(--clb-color-grey);
+  color: rgba(255, 255, 255, 0.55);
   border-radius: 0.5rem;
   transition: color var(--transition);
   position: relative;
@@ -951,7 +961,7 @@ body.cursor-hover .circle-cursor-inner svg { width: 14px; height: 14px; opacity:
 .reviews-card {
   display: flex;
   flex-direction: column;
-  background: rgba(79, 116, 147, 0.06);
+  background: var(--clb-color-surface);
   border-radius: 20px;
   padding: 1.5vw;
 }
@@ -960,12 +970,13 @@ body.cursor-hover .circle-cursor-inner svg { width: 14px; height: 14px; opacity:
   align-items: center;
   align-self: flex-start;
   gap: 0.5rem;
-  border: 1px solid var(--clb-color-border);
+  border: 1px solid var(--clb-color-surface-border);
   border-radius: 20px;
   padding: 0.25rem 1rem 0.25rem 0.5rem;
   margin-bottom: 1rem;
   font-size: 0.875rem;
   font-weight: 500;
+  color: #f0f1f3;
 }
 .reviews-card .badge-inner {
   background: #e5fee8;
@@ -987,7 +998,7 @@ body.cursor-hover .circle-cursor-inner svg { width: 14px; height: 14px; opacity:
   margin: 0;
   font-size: 1.1em;
   line-height: 1.8;
-  color: var(--clb-text-color);
+  color: #f0f1f3;
 }
 .reviews-card .testimonial .holder {
   display: flex;
@@ -1007,10 +1018,11 @@ body.cursor-hover .circle-cursor-inner svg { width: 14px; height: 14px; opacity:
   font-size: 0.9375rem;
   font-weight: 600;
   margin: 0;
+  color: #f0f1f3;
 }
 .reviews-card .author-details {
   font-size: 0.8125rem;
-  color: var(--clb-color-grey);
+  color: rgba(255, 255, 255, 0.55);
   margin: 0.25rem 0 0;
 }
 .reviews-card .button.-reviews {

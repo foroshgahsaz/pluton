@@ -474,6 +474,102 @@ body.cursor-hover .circle-cursor-inner svg { width: 14px; height: 14px; opacity:
 }
 .video-button:hover .icon-button.-large { transform: scale(1.08); }
 
+.hero-visual { position: relative; }
+.lighthouse-showcase {
+  position: relative;
+  padding: 1.25rem;
+  border-radius: var(--clb-border-radius);
+  background: linear-gradient(145deg, rgba(75, 4, 255, 0.08), rgba(91, 242, 255, 0.06));
+  border: 1px solid rgba(75, 4, 255, 0.12);
+}
+.lighthouse-showcase img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+}
+.lighthouse-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  justify-content: center;
+}
+.lighthouse-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: #fff;
+  color: var(--clb-color-black-light);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+.lighthouse-badge.-green { color: #0a7a3e; }
+.lighthouse-badge.-purple { color: #4b04ff; }
+.tech-stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1.25rem;
+}
+.tech-stack span {
+  padding: 0.35rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: rgba(79, 116, 147, 0.08);
+  color: var(--clb-color-primary);
+}
+.section-illustration--admin {
+  background: linear-gradient(160deg, #4b04ff 0%, #2d1a8a 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  min-height: 50vh;
+}
+.admin-mockup {
+  width: 100%;
+  max-width: 420px;
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.25);
+}
+.admin-mockup-header {
+  padding: 1rem 1.25rem;
+  background: #f8f9fc;
+  border-bottom: 1px solid #e8ecf2;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #283742;
+}
+.admin-mockup-body { padding: 1.25rem; }
+.admin-mockup-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #f0f2f5;
+  font-size: 0.8125rem;
+  color: #5a6a78;
+}
+.admin-mockup-row:last-child { border-bottom: none; }
+.admin-mockup-row strong { color: #283742; }
+.admin-mockup-stat {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: rgba(12, 206, 107, 0.12);
+  color: #0a7a3e;
+}
+
 /* Service tables */
 .service-tables {
   display: grid;

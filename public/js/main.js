@@ -1,305 +1,290 @@
 /**
- * ExportOS Landing — Main interactions
- * Vanilla JS, Alpine.js-ready structure
- * @version 1.0.0
+ * Ohio Demo 5 — interactions (Persian clone)
  */
 (function () {
   'use strict';
 
-  const $ = (sel, ctx = document) => ctx.querySelector(sel);
-  const $$ = (sel, ctx = document) => [...ctx.querySelectorAll(sel)];
+  const $ = (s, c = document) => c.querySelector(s);
+  const $$ = (s, c = document) => [...c.querySelectorAll(s)];
 
-  /* --- Theme toggle --- */
-  const initTheme = () => {
-    const saved = localStorage.getItem('exportos-theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const theme = saved || (prefersDark ? 'dark' : 'light');
+  /* Theme */
+  function initTheme() {
+    const saved = localStorage.getItem('ohio-theme');
+    const prefers = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const theme = saved || (prefers ? 'dark' : 'light');
     document.documentElement.setAttribute('data-theme', theme);
-    updateThemeButtons(theme);
-
+    $$('[data-theme-value]').forEach(b => b.classList.toggle('is-active', b.dataset.themeValue === theme));
     $$('[data-theme-toggle]').forEach(btn => {
       btn.addEventListener('click', () => {
-        const current = document.documentElement.getAttribute('data-theme');
-        const next = current === 'dark' ? 'light' : 'dark';
+        const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
         document.documentElement.setAttribute('data-theme', next);
-        localStorage.setItem('exportos-theme', next);
-        updateThemeButtons(next);
+        localStorage.setItem('ohio-theme', next);
+        $$('[data-theme-value]').forEach(b => b.classList.toggle('is-active', b.dataset.themeValue === next));
       });
     });
-  };
+  }
 
-  const updateThemeButtons = (theme) => {
-    $$('[data-theme-value]').forEach(btn => {
-      btn.classList.toggle('is-active', btn.dataset.themeValue === theme);
+  /* Custom cursor */
+  function initCursor() {
+    if (!window.matchMedia('(min-width: 1024px)').matches) return;
+    document.body.classList.add('custom-cursor');
+    const outer = $('.circle-cursor-outer');
+    const inner = $('.circle-cursor-inner');
+    if (!outer || !inner) return;
+
+    let x = 0, y = 0, ox = 0, oy = 0;
+    document.addEventListener('mousemove', e => { x = e.clientX; y = e.clientY; });
+    document.addEventListener('mouseover', e => {
+      if (e.target.closest('a, button, .video-button, input, select, textarea')) {
+        document.body.classList.add('cursor-hover');
+      }
     });
-  };
+    document.addEventListener('mouseout', e => {
+      if (e.target.closest('a, button, .video-button, input, select, textarea')) {
+        document.body.classList.remove('cursor-hover');
+      }
+    });
 
-  /* --- Sticky header --- */
-  const initHeader = () => {
+    (function loop() {
+      ox += (x - ox) * 0.15;
+      oy += (y - oy) * 0.15;
+      outer.style.left = ox + 'px';
+      outer.style.top = oy + 'px';
+      inner.style.left = x + 'px';
+      inner.style.top = y + 'px';
+      requestAnimationFrame(loop);
+    })();
+  }
+
+  /* Header scroll */
+  function initHeader() {
     const header = $('.header');
-    if (!header) return;
-
+    const scrollTop = $('.scroll-top');
+    const track = $('.scroll-track');
     const onScroll = () => {
-      header.classList.toggle('header--scrolled', window.scrollY > 50);
-      const scrollTop = $('.scroll-top');
-      if (scrollTop) {
-        scrollTop.classList.toggle('is-visible', window.scrollY > 400);
-        const progress = $('.scroll-top__progress');
-        if (progress) {
-          const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-          const pct = docHeight > 0 ? (window.scrollY / docHeight) * 100 : 0;
-          progress.style.height = pct + '%';
+      const y = window.scrollY;
+      header?.classList.toggle('is-scrolled', y > 40);
+      scrollTop?.classList.toggle('is-visible', y > 400);
+      if (track) {
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        track.style.height = (max > 0 ? (y / max) * 100 : 0) + '%';
+      }
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    scrollTop?.addEventListener('click', e => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+  }
+
+  /* Menu overlay */
+  function initMenu() {
+    const overlay = $('#menu-overlay');
+    const open = () => { overlay?.classList.add('is-open'); document.body.style.overflow = 'hidden'; };
+    const close = () => { overlay?.classList.remove('is-open'); document.body.style.overflow = ''; };
+    $$('[data-menu-open]').forEach(b => b.addEventListener('click', open));
+    $$('[data-menu-close]').forEach(b => b.addEventListener('click', close));
+    $('.menu-overlay .overlay-bg')?.addEventListener('click', close);
+  }
+
+  /* Search popup */
+  function initSearch() {
+    const popup = $('#search-popup');
+    const open = () => popup?.classList.add('is-open');
+    const close = () => popup?.classList.remove('is-open');
+    $$('[data-search-open]').forEach(b => b.addEventListener('click', open));
+    $$('[data-search-close]').forEach(b => b.addEventListener('click', close));
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+  }
+
+  /* Accordion */
+  function initAccordion() {
+    $$('.accordion-item').forEach(item => {
+      const trigger = $('.accordion-trigger', item);
+      const panel = $('.accordion-panel', item);
+      trigger?.addEventListener('click', () => {
+        const open = item.classList.contains('is-open');
+        $$('.accordion-item.is-open').forEach(i => {
+          i.classList.remove('is-open');
+          const p = $('.accordion-panel', i);
+          if (p) p.style.maxHeight = '0';
+        });
+        if (!open) {
+          item.classList.add('is-open');
+          if (panel) panel.style.maxHeight = panel.scrollHeight + 'px';
         }
+      });
+    });
+  }
+
+  /* Pricing tabs */
+  function initTabs() {
+    const nav = $('.tabs-nav');
+    if (!nav) return;
+    const btns = $$('button', nav);
+    const line = $('.tabs-nav-line', nav);
+    const panels = $$('.tab-panel');
+
+    const activate = (index) => {
+      btns.forEach((b, i) => b.classList.toggle('is-active', i === index));
+      panels.forEach((p, i) => p.classList.toggle('is-active', i === index));
+      if (line && btns[index]) {
+        const btn = btns[index];
+        line.style.width = btn.offsetWidth + 'px';
+        line.style.right = (nav.offsetWidth - btn.offsetLeft - btn.offsetWidth) + 'px';
       }
     };
 
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
-  };
-
-  /* --- Mobile menu --- */
-  const initMobileMenu = () => {
-    const menu = $('#mobile-menu');
-    const openBtn = $('[data-mobile-menu-open]');
-    const closeBtn = $('[data-mobile-menu-close]');
-    if (!menu) return;
-
-    const open = () => {
-      menu.classList.add('is-open');
-      document.body.style.overflow = 'hidden';
-    };
-    const close = () => {
-      menu.classList.remove('is-open');
-      document.body.style.overflow = '';
-    };
-
-    openBtn?.addEventListener('click', open);
-    closeBtn?.addEventListener('click', close);
-    $('.mobile-menu__overlay', menu)?.addEventListener('click', close);
-    $$('.mobile-menu__nav a', menu).forEach(link => {
-      link.addEventListener('click', close);
+    btns.forEach((btn, i) => btn.addEventListener('click', () => activate(i)));
+    activate(0);
+    window.addEventListener('resize', () => {
+      const active = btns.findIndex(b => b.classList.contains('is-active'));
+      if (active >= 0) activate(active);
     });
-  };
+  }
 
-  /* --- Accordion --- */
-  const initAccordion = () => {
-    $$('.accordion__item').forEach(item => {
-      const trigger = $('.accordion__trigger', item);
-      const panel = $('.accordion__panel', item);
-      if (!trigger || !panel) return;
-
-      trigger.addEventListener('click', () => {
-        const isOpen = item.classList.contains('is-open');
-
-        $$('.accordion__item.is-open').forEach(openItem => {
-          if (openItem !== item) {
-            openItem.classList.remove('is-open');
-            const p = $('.accordion__panel', openItem);
-            if (p) p.style.maxHeight = '0';
-            const t = $('.accordion__trigger', openItem);
-            if (t) t.setAttribute('aria-expanded', 'false');
-          }
-        });
-
-        item.classList.toggle('is-open', !isOpen);
-        panel.style.maxHeight = !isOpen ? panel.scrollHeight + 'px' : '0';
-        trigger.setAttribute('aria-expanded', String(!isOpen));
-      });
-    });
-  };
-
-  /* --- Pricing toggle --- */
-  const initPricing = () => {
-    const toggle = $('[data-pricing-toggle]');
-    const grid = $('.pricing-cards');
-    const labels = $$('[data-pricing-label]');
-    if (!toggle || !grid) return;
-
-    toggle.addEventListener('click', () => {
-      const isYearly = toggle.classList.toggle('is-yearly');
-      grid.classList.toggle('pricing-cards--yearly', isYearly);
-      labels.forEach(l => {
-        l.classList.toggle('is-active', l.dataset.pricingLabel === (isYearly ? 'yearly' : 'monthly'));
-      });
-    });
-  };
-
-  /* --- Counter animation --- */
-  const initCounters = () => {
-    const counters = $$('[data-counter]');
-    if (!counters.length) return;
-
-    const animate = (el) => {
+  /* Counters */
+  function initCounters() {
+    const run = (el) => {
       const target = parseInt(el.dataset.counter, 10);
       const suffix = el.dataset.suffix || '';
       const prefix = el.dataset.prefix || '';
-      const duration = 2000;
+      const numEl = el.querySelector('.number') || el.querySelector('.cta-stat-value') || el;
       const start = performance.now();
-
-      const step = (now) => {
-        const progress = Math.min((now - start) / duration, 1);
-        const eased = 1 - Math.pow(1 - progress, 3);
-        const value = Math.floor(eased * target);
-        el.textContent = prefix + value.toLocaleString('fa-IR') + suffix;
-        if (progress < 1) requestAnimationFrame(step);
+      const tick = (now) => {
+        const p = Math.min((now - start) / 2000, 1);
+        const val = Math.floor((1 - Math.pow(1 - p, 3)) * target);
+        numEl.textContent = prefix + val.toLocaleString('fa-IR') + suffix;
+        if (p < 1) requestAnimationFrame(tick);
       };
-
-      requestAnimationFrame(step);
+      requestAnimationFrame(tick);
     };
 
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          animate(entry.target);
-          observer.unobserve(entry.target);
-        }
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) { run(e.target); obs.unobserve(e.target); }
       });
     }, { threshold: 0.3 });
 
-    counters.forEach(c => observer.observe(c));
-  };
+    $$('[data-counter]').forEach(c => obs.observe(c));
+  }
 
-  /* --- Testimonials slider --- */
-  const initTestimonials = () => {
-    const slider = $('.testimonials-slider');
-    const track = $('.testimonials-track', slider);
-    const prev = $('[data-testimonial-prev]');
-    const next = $('[data-testimonial-next]');
+  /* Progress bar */
+  function initProgress() {
+    const bars = $$('[data-progress]');
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          const bar = $('.progress-bar', e.target);
+          const pct = e.target.dataset.progress;
+          if (bar) bar.style.width = pct + '%';
+          const percent = $('.percent', e.target);
+          if (percent) {
+            let v = 0;
+            const step = () => {
+              v = Math.min(v + 2, parseInt(pct));
+              percent.textContent = v;
+              if (v < parseInt(pct)) requestAnimationFrame(step);
+            };
+            requestAnimationFrame(step);
+          }
+          obs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.5 });
+    bars.forEach(b => obs.observe(b));
+  }
+
+  /* Testimonials */
+  function initTestimonials() {
+    const track = $('.testimonials-track');
     if (!track) return;
+    const slides = $$('.testimonial-slide', track);
+    let idx = 0;
 
-    const cards = $$('.testimonial-card', track);
-    let index = 0;
-
-    const getVisible = () => {
-      if (window.innerWidth >= 1024) return 3;
-      if (window.innerWidth >= 768) return 2;
-      return 1;
-    };
-
+    const visible = () => window.innerWidth >= 1024 ? 3 : window.innerWidth >= 768 ? 2 : 1;
     const update = () => {
-      const visible = getVisible();
-      const maxIndex = Math.max(0, cards.length - visible);
-      index = Math.min(index, maxIndex);
-      const cardWidth = cards[0]?.offsetWidth || 0;
-      track.style.transform = `translateX(${-index * cardWidth}px)`;
+      const v = visible();
+      const max = Math.max(0, slides.length - v);
+      idx = Math.min(idx, max);
+      track.style.transform = `translateX(${-idx * (slides[0]?.offsetWidth || 0)}px)`;
     };
 
-    prev?.addEventListener('click', () => {
-      index = Math.max(0, index - 1);
+    $('[data-slide-prev]')?.addEventListener('click', () => { idx = Math.max(0, idx - 1); update(); });
+    $('[data-slide-next]')?.addEventListener('click', () => {
+      const max = Math.max(0, slides.length - visible());
+      idx = Math.min(max, idx + 1);
       update();
     });
-
-    next?.addEventListener('click', () => {
-      const visible = getVisible();
-      const maxIndex = Math.max(0, cards.length - visible);
-      index = Math.min(maxIndex, index + 1);
-      update();
-    });
-
     window.addEventListener('resize', update, { passive: true });
     update();
 
-    // Auto-play
-    let autoplay = setInterval(() => {
-      const visible = getVisible();
-      const maxIndex = Math.max(0, cards.length - visible);
-      index = index >= maxIndex ? 0 : index + 1;
+    setInterval(() => {
+      const max = Math.max(0, slides.length - visible());
+      idx = idx >= max ? 0 : idx + 1;
       update();
     }, 5000);
+  }
 
-    slider?.addEventListener('mouseenter', () => clearInterval(autoplay));
-    slider?.addEventListener('mouseleave', () => {
-      autoplay = setInterval(() => {
-        const visible = getVisible();
-        const maxIndex = Math.max(0, cards.length - visible);
-        index = index >= maxIndex ? 0 : index + 1;
-        update();
-      }, 5000);
-    });
-  };
-
-  /* --- Countdown --- */
-  const initCountdown = () => {
+  /* Countdown */
+  function initCountdown() {
     const el = $('[data-countdown]');
     if (!el) return;
-
     const target = new Date(el.dataset.countdown).getTime();
-
     const tick = () => {
-      const now = Date.now();
-      const diff = Math.max(0, target - now);
-
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-      const set = (key, val) => {
-        const node = $(`[data-countdown-${key}]`, el);
-        if (node) node.textContent = String(val).padStart(2, '0');
-      };
-
-      set('days', days);
-      set('hours', hours);
-      set('minutes', minutes);
-      set('seconds', seconds);
+      const diff = Math.max(0, target - Date.now());
+      const d = Math.floor(diff / 86400000);
+      const h = Math.floor((diff % 86400000) / 3600000);
+      const m = Math.floor((diff % 3600000) / 60000);
+      const s = Math.floor((diff % 60000) / 1000);
+      [['days', d], ['hours', h], ['minutes', m], ['seconds', s]].forEach(([k, v]) => {
+        const node = $(`[data-cd-${k}]`, el);
+        if (node) node.textContent = String(v).padStart(2, '0');
+      });
     };
-
     tick();
     setInterval(tick, 1000);
-  };
+  }
 
-  /* --- Cookie notice --- */
-  const initCookie = () => {
-    const notice = $('#cookie-notice');
-    if (!notice || localStorage.getItem('exportos-cookie-accepted')) return;
-
-    setTimeout(() => notice.classList.add('is-visible'), 2000);
-
-    $('[data-cookie-accept]', notice)?.addEventListener('click', () => {
-      localStorage.setItem('exportos-cookie-accepted', '1');
-      notice.classList.remove('is-visible');
+  /* Cookie */
+  function initCookie() {
+    const n = $('.notification');
+    if (!n || localStorage.getItem('ohio-cookie')) return;
+    setTimeout(() => n.classList.add('is-visible'), 1500);
+    $('[data-cookie-close]')?.addEventListener('click', () => {
+      localStorage.setItem('ohio-cookie', '1');
+      n.classList.remove('is-visible');
     });
-  };
+  }
 
-  /* --- Scroll to top --- */
-  const initScrollTop = () => {
-    $('.scroll-top')?.addEventListener('click', (e) => {
-      e.preventDefault();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-  };
-
-  /* --- Smooth anchor scroll --- */
-  const initAnchors = () => {
-    $$('a[href^="#"]').forEach(link => {
-      link.addEventListener('click', (e) => {
-        const id = link.getAttribute('href');
+  /* Anchors */
+  function initAnchors() {
+    $$('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', e => {
+        const id = a.getAttribute('href');
         if (id === '#') return;
-        const target = $(id);
-        if (target) {
+        const t = $(id);
+        if (t) {
           e.preventDefault();
-          const offset = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--subheader-h')) +
-                         parseInt(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) + 16;
-          const top = target.getBoundingClientRect().top + window.scrollY - offset;
-          window.scrollTo({ top, behavior: 'smooth' });
+          const off = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--subheader-h')) * 16
+                    + parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) * 16 + 16;
+          window.scrollTo({ top: t.getBoundingClientRect().top + window.scrollY - off, behavior: 'smooth' });
         }
       });
     });
-  };
+  }
 
-  /* --- Init --- */
   document.addEventListener('DOMContentLoaded', () => {
     initTheme();
+    initCursor();
     initHeader();
-    initMobileMenu();
+    initMenu();
+    initSearch();
     initAccordion();
-    initPricing();
+    initTabs();
     initCounters();
+    initProgress();
     initTestimonials();
     initCountdown();
     initCookie();
-    initScrollTop();
     initAnchors();
   });
 })();

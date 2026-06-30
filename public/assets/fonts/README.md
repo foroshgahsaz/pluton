@@ -1,10 +1,21 @@
-# فونت یکان باخ
+# فونت یکان باخ FaNum
 
-فایل‌های زیر را در این پوشه قرار دهید:
+فایل‌های فونت در این پوشه قرار دارند:
 
-- `YekanBakh-Regular.woff2` (وزن ۴۰۰)
-- `YekanBakh-Medium.woff2` (وزن ۵۰۰)
-- `YekanBakh-Bold.woff2` (وزن ۷۰۰)
-- `YekanBakh-ExtraBold.woff2` (وزن ۸۰۰)
+| فایل | وزن CSS |
+|------|---------|
+| `YekanBakhFaNum-Thin.woff` | 100 |
+| `YekanBakhFaNum-Light.woff` | 300 |
+| `YekanBakhFaNum-Regular.woff` | 400 |
+| `YekanBakhFaNum-SemiBold.woff` | 600 |
+| `YekanBakhFaNum-Bold.woff` | 700 |
+| `YekanBakhFaNum-ExtraBold.woff` | 800 |
+| `YekanBakhFaNum-Black.woff` | 900 |
 
-پس از اضافه کردن فونت‌ها، صفحه به‌صورت خودکار از یکان باخ استفاده می‌کند.
+## دانلود مجدد از سرور اصلی
+
+```bash
+bash download-fonts.sh
+```
+
+منبع: `https://avidgruop.ir/wp-content/uploads/2025/12/`

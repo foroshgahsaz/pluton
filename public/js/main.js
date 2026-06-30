@@ -85,17 +85,7 @@
     $('.menu-overlay .overlay-bg')?.addEventListener('click', close);
   }
 
-  /* Search popup */
-  function initSearch() {
-    const popup = $('#search-popup');
-    const open = () => popup?.classList.add('is-open');
-    const close = () => popup?.classList.remove('is-open');
-    $$('[data-search-open]').forEach(b => b.addEventListener('click', open));
-    $$('[data-search-close]').forEach(b => b.addEventListener('click', close));
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
-  }
-
-  /* Accordion */
+  /* Menu overlay */
   function initAccordion() {
     $$('.accordion-item').forEach(item => {
       const trigger = $('.accordion-trigger', item);
@@ -344,7 +334,6 @@
     initCursor();
     initHeader();
     initMenu();
-    initSearch();
     initAccordion();
     initSliders();
     initTabs();

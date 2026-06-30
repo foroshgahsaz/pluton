@@ -336,18 +336,27 @@ body.cursor-hover .circle-cursor-inner svg { width: 14px; height: 14px; opacity:
   font-size: 0.9375rem;
   font-weight: 500;
   color: #fff;
-  background: var(--clb-color-black-light);
+  background: var(--clb-color-primary);
   border-radius: var(--clb-border-radius-full);
   border: none;
   transition: all var(--transition);
   white-space: nowrap;
 }
-.button:hover { background: var(--clb-color-primary); transform: translateY(-1px); }
+.button:hover { background: var(--clb-color-primary-hover); transform: translateY(-1px); }
 .button.-large { height: var(--clb-button-height-large); padding: 0 2rem; font-size: 1rem; }
 .button.-text { background: transparent; color: var(--clb-text-color); }
 .button.-text:hover { background: transparent; color: var(--clb-color-primary); transform: none; }
 .button.-purchase { background: var(--clb-color-primary); }
 .button.-purchase:hover { background: var(--clb-color-primary-hover); }
+.button.-secondary {
+  background: #edf1f4;
+  color: #283742;
+}
+.button.-secondary:hover {
+  background: #dfe5ea;
+  color: #283742;
+  transform: translateY(-1px);
+}
 
 /* Main content offset */
 .site-content { padding-top: calc(var(--subheader-h) + var(--header-h)); }
@@ -368,7 +377,7 @@ body.cursor-hover .circle-cursor-inner svg { width: 14px; height: 14px; opacity:
 }
 .badge:hover { border-color: var(--clb-color-primary); }
 .badge-inner {
-  background: var(--clb-color-primary);
+  background: rgba(40, 55, 66, 0.85);
   color: #fff;
   font-size: 0.6875rem;
   font-weight: 600;
@@ -420,9 +429,9 @@ body.cursor-hover .circle-cursor-inner svg { width: 14px; height: 14px; opacity:
 
 .video-button {
   position: relative;
-  aspect-ratio: 16/10;
+  min-height: 62vh;
   border-radius: var(--clb-border-radius);
-  background: url('../assets/images/service_img_03-1024x653.webp') center/cover no-repeat;
+  background: url('../assets/images/oh__demo5__01.webp') center center/contain no-repeat;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -433,15 +442,14 @@ body.cursor-hover .circle-cursor-inner svg { width: 14px; height: 14px; opacity:
   content: '';
   position: absolute;
   inset: 0;
-  background: rgba(17, 16, 19, 0.15);
-  transition: background var(--transition);
+  background: transparent;
 }
-.video-button:hover::before { background: rgba(17, 16, 19, 0.25); }
 .video-button .icon-button.-large {
   position: relative;
   z-index: 1;
   width: 4.5rem; height: 4.5rem;
-  background: #fff;
+  background: #283742;
+  color: #fff;
   border-radius: 50%;
   box-shadow: 0 8px 32px rgba(0,0,0,0.15);
   transition: transform var(--transition);
@@ -452,19 +460,55 @@ body.cursor-hover .circle-cursor-inner svg { width: 14px; height: 14px; opacity:
 .service-tables {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: var(--clb-grid-gutter);
-  padding: 3rem 0 5rem;
-  border-top: 1px solid var(--clb-color-border);
+  gap: 1.25rem;
+  padding: 2vh 0 8vh;
 }
 .service-table {
   padding: 2rem;
-  border: 1px solid var(--clb-color-border);
-  border-radius: var(--clb-border-radius);
-  transition: all var(--transition);
+  border: none;
+  border-radius: 20px;
+  transition: background var(--transition);
 }
-.service-table:hover {
-  border-color: color-mix(in srgb, var(--clb-color-primary) 30%, transparent);
-  box-shadow: 0 8px 32px rgba(75, 4, 255, 0.08);
+
+/* کارت اول — بنفش */
+.service-table--featured {
+  background: #4b04ff;
+}
+.service-table--featured h4.title {
+  color: #5bf2ff;
+  border-bottom: none;
+  padding-bottom: 0;
+}
+.service-table--featured .icon-group.-contained {
+  background: #5bf2ff;
+  color: #4b04ff;
+  border-radius: 20px;
+}
+.service-table--featured .service-table-features li.exist {
+  color: #fff;
+}
+.service-table--featured .service-table-features li.exist .icon {
+  color: #5bf2ff;
+}
+
+/* کارت‌های ۲ و ۳ — خاکستری روشن */
+.service-table--muted {
+  background: rgba(79, 116, 147, 0.06);
+}
+.service-table--muted:hover {
+  background: rgba(79, 116, 147, 0.12);
+}
+.service-table--muted .icon-group.-contained {
+  background: rgba(79, 116, 147, 0.08);
+  color: #4200ff;
+  border-radius: 20px;
+}
+.service-table--muted .service-table-features li.exist .icon {
+  color: #4200ff;
+}
+.service-table--muted h4.title {
+  border-bottom: none;
+  padding-bottom: 0;
 }
 .icon-group.-contained {
   display: inline-flex;
@@ -482,8 +526,6 @@ body.cursor-hover .circle-cursor-inner svg { width: 14px; height: 14px; opacity:
   font-weight: 600;
   line-height: 1.4;
   margin-bottom: 1.25rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid var(--clb-color-border);
 }
 .service-table-features li {
   display: flex;
@@ -508,10 +550,27 @@ body.cursor-hover .circle-cursor-inner svg { width: 14px; height: 14px; opacity:
   align-items: center;
 }
 .section-grid.-reverse .section-visual { order: -1; }
-.section-image {
+.section-content {
+  padding-inline-start: 1rem;
+  padding-inline-end: 10vh;
+}
+.section-visual {
+  flex: 1 0 auto;
+  align-self: stretch;
+}
+.section-illustration {
   width: 100%;
-  border-radius: var(--clb-border-radius);
-  box-shadow: 0 12px 48px rgba(0,0,0,0.08);
+  min-height: 50vh;
+  border-radius: 28px;
+  background-position: bottom center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+.section-illustration--discover {
+  background-image: url('../assets/images/oh__demo5__02.webp');
+}
+.section-illustration--contract {
+  background-image: url('../assets/images/oh__demo5__03.webp');
 }
 .section-block .eyebrow {
   font-size: 0.75rem;
@@ -525,6 +584,14 @@ body.cursor-hover .circle-cursor-inner svg { width: 14px; height: 14px; opacity:
 .section-block .desc { font-size: 1.0625rem; color: var(--clb-color-grey); line-height: 1.8; margin-bottom: 1.5rem; }
 
 /* Accordion */
+.accordion { margin-top: 2rem; }
+.accordion.-contained {
+  background: rgba(79, 116, 147, 0.06);
+  border-radius: 20px;
+  padding: 0.5rem 1.25rem;
+}
+.accordion.-contained .accordion-item { border-bottom-color: rgba(79, 116, 147, 0.12); }
+.accordion.-contained .accordion-item:last-child { border-bottom: none; }
 .accordion-item { border-bottom: 1px solid var(--clb-color-border); }
 .accordion-trigger {
   display: flex;
@@ -945,6 +1012,8 @@ body.cursor-hover .circle-cursor-inner svg { width: 14px; height: 14px; opacity:
   .elements-bar.left { display: none; }
   .hero-buttons { flex-direction: column; }
   .hero-buttons .button { width: 100%; }
+  .section-content { padding-inline: 1rem; }
+  .section-illustration { min-height: 40vh; }
 }
 
 @media (prefers-reduced-motion: reduce) {

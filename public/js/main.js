@@ -237,8 +237,7 @@
         const t = $(id);
         if (t) {
           e.preventDefault();
-          const off = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--subheader-h')) * 16
-                    + parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) * 16 + 16;
+          const off = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--header-h')) * 16 + 16;
           window.scrollTo({ top: t.getBoundingClientRect().top + window.scrollY - off, behavior: 'smooth' });
         }
       });

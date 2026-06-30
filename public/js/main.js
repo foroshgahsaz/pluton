@@ -7,23 +7,6 @@
   const $ = (s, c = document) => c.querySelector(s);
   const $$ = (s, c = document) => [...c.querySelectorAll(s)];
 
-  /* Theme */
-  function initTheme() {
-    const saved = localStorage.getItem('ohio-theme');
-    const prefers = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const theme = saved || (prefers ? 'dark' : 'light');
-    document.documentElement.setAttribute('data-theme', theme);
-    $$('[data-theme-value]').forEach(b => b.classList.toggle('is-active', b.dataset.themeValue === theme));
-    $$('[data-theme-toggle]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-        document.documentElement.setAttribute('data-theme', next);
-        localStorage.setItem('ohio-theme', next);
-        $$('[data-theme-value]').forEach(b => b.classList.toggle('is-active', b.dataset.themeValue === next));
-      });
-    });
-  }
-
   /* Custom cursor */
   function initCursor() {
     if (!window.matchMedia('(min-width: 1024px)').matches) return;
@@ -330,7 +313,6 @@
   }
 
   document.addEventListener('DOMContentLoaded', () => {
-    initTheme();
     initCursor();
     initHeader();
     initMenu();

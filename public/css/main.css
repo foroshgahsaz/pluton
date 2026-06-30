@@ -1,30 +1,51 @@
-/* Ohio Demo 5 — Pixel-perfect clone · RTL Persian · Yekan Bakh */
+/* Ohio Demo 5 — Pixel-perfect clone · RTL Persian · Yekan Bakh FaNum */
 
 @font-face {
-  font-family: 'Yekan Bakh';
-  src: url('../assets/fonts/YekanBakh-Regular.woff2') format('woff2');
+  font-family: 'Yekan Bakh FaNum';
+  src: url('../assets/fonts/YekanBakhFaNum-Thin.woff') format('woff');
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Yekan Bakh FaNum';
+  src: url('../assets/fonts/YekanBakhFaNum-Light.woff') format('woff');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Yekan Bakh FaNum';
+  src: url('../assets/fonts/YekanBakhFaNum-Regular.woff') format('woff');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
-  font-family: 'Yekan Bakh';
-  src: url('../assets/fonts/YekanBakh-Medium.woff2') format('woff2');
-  font-weight: 500;
+  font-family: 'Yekan Bakh FaNum';
+  src: url('../assets/fonts/YekanBakhFaNum-SemiBold.woff') format('woff');
+  font-weight: 600;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
-  font-family: 'Yekan Bakh';
-  src: url('../assets/fonts/YekanBakh-Bold.woff2') format('woff2');
+  font-family: 'Yekan Bakh FaNum';
+  src: url('../assets/fonts/YekanBakhFaNum-Bold.woff') format('woff');
   font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
-  font-family: 'Yekan Bakh';
-  src: url('../assets/fonts/YekanBakh-ExtraBold.woff2') format('woff2');
+  font-family: 'Yekan Bakh FaNum';
+  src: url('../assets/fonts/YekanBakhFaNum-ExtraBold.woff') format('woff');
   font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Yekan Bakh FaNum';
+  src: url('../assets/fonts/YekanBakhFaNum-Black.woff') format('woff');
+  font-weight: 900;
   font-style: normal;
   font-display: swap;
 }
@@ -54,7 +75,7 @@
   --subheader-h: 2.25rem;
   --header-h: 4.5rem;
   --container: 75rem;
-  --font: 'Yekan Bakh', Tahoma, sans-serif;
+  --font: 'Yekan Bakh FaNum', Tahoma, sans-serif;
   --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 

@@ -116,6 +116,100 @@
   }
 
   /* Tabs (pricing + reviews) */
+  const sliderRefreshers = [];
+
+  function refreshSliders() {
+    sliderRefreshers.forEach(refresh => refresh());
+  }
+
+  function initSliders() {
+    sliderRefreshers.length = 0;
+    $$('[data-slider]').forEach(root => {
+      const viewport = $('.content-slider-viewport', root);
+      const track = $('.content-slider-track', root);
+      const prev = $('.content-slider-btn.-prev', root);
+      const next = $('.content-slider-btn.-next', root);
+      const dotsWrap = $('.content-slider-dots', root);
+      let index = 0;
+
+      const slides = () => $$('.content-slider-slide', track);
+      const isMobile = () => window.matchMedia('(max-width: 768px)').matches;
+      const shouldActivate = () => isMobile() || slides().length > 2;
+      const getPerView = () => (isMobile() ? 1 : Math.min(2, slides().length));
+      const getMaxIndex = () => Math.max(0, slides().length - getPerView());
+
+      const buildDots = () => {
+        if (!dotsWrap) return;
+        dotsWrap.innerHTML = '';
+        const max = getMaxIndex();
+        for (let i = 0; i <= max; i++) {
+          const dot = document.createElement('button');
+          dot.type = 'button';
+          dot.className = 'content-slider-dot' + (i === index ? ' is-active' : '');
+          dot.setAttribute('aria-label', `اسلاید ${i + 1}`);
+          dot.addEventListener('click', () => { index = i; update(); });
+          dotsWrap.appendChild(dot);
+        }
+      };
+
+      const update = () => {
+        const active = shouldActivate();
+        const perView = getPerView();
+        const slideEls = slides();
+        root.classList.toggle('is-slider-active', active);
+        root.classList.toggle('is-per-view-2', active && perView === 2);
+
+        if (!active || !slideEls.length) {
+          track.style.transform = '';
+          if (prev) prev.disabled = true;
+          if (next) next.disabled = true;
+          if (dotsWrap) dotsWrap.innerHTML = '';
+          return;
+        }
+
+        const max = getMaxIndex();
+        index = Math.min(index, max);
+        buildDots();
+
+        const gap = parseFloat(getComputedStyle(track).gap) || 16;
+        const slideWidth = slideEls[0].getBoundingClientRect().width;
+        const isRtl = getComputedStyle(document.documentElement).direction === 'rtl';
+        const offset = index * (slideWidth + gap);
+        track.style.transform = `translate3d(${isRtl ? offset : -offset}px, 0, 0)`;
+
+        if (prev) prev.disabled = index <= 0;
+        if (next) next.disabled = index >= max;
+      };
+
+      prev?.addEventListener('click', () => { index = Math.max(0, index - 1); update(); });
+      next?.addEventListener('click', () => { index = Math.min(getMaxIndex(), index + 1); update(); });
+
+      let touchStartX = 0;
+      viewport?.addEventListener('touchstart', e => {
+        touchStartX = e.touches[0].clientX;
+      }, { passive: true });
+      viewport?.addEventListener('touchend', e => {
+        if (!shouldActivate()) return;
+        const dx = e.changedTouches[0].clientX - touchStartX;
+        if (Math.abs(dx) < 40) return;
+        const isRtl = getComputedStyle(document.documentElement).direction === 'rtl';
+        if (isRtl) {
+          if (dx > 0) index = Math.min(getMaxIndex(), index + 1);
+          else index = Math.max(0, index - 1);
+        } else {
+          if (dx < 0) index = Math.min(getMaxIndex(), index + 1);
+          else index = Math.max(0, index - 1);
+        }
+        update();
+      }, { passive: true });
+
+      update();
+      sliderRefreshers.push(update);
+    });
+
+    window.addEventListener('resize', refreshSliders, { passive: true });
+  }
+
   function initTabs() {
     $$('.tabs').forEach((tabsRoot) => {
       const nav = $('.tabs-nav', tabsRoot);
@@ -134,6 +228,7 @@
           line.style.right = (nav.offsetWidth - btn.offsetLeft - btn.offsetWidth) + 'px';
           line.style.left = 'auto';
         }
+        requestAnimationFrame(refreshSliders);
       };
 
       btns.forEach((btn, i) => btn.addEventListener('click', () => activate(i)));
@@ -251,6 +346,7 @@
     initMenu();
     initSearch();
     initAccordion();
+    initSliders();
     initTabs();
     initCounters();
     initProgress();

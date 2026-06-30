@@ -115,29 +115,33 @@
     });
   }
 
-  /* Pricing tabs */
+  /* Tabs (pricing + reviews) */
   function initTabs() {
-    const nav = $('.tabs-nav');
-    if (!nav) return;
-    const btns = $$('button', nav);
-    const line = $('.tabs-nav-line', nav);
-    const panels = $$('.tab-panel');
+    $$('.tabs').forEach((tabsRoot) => {
+      const nav = $('.tabs-nav', tabsRoot);
+      if (!nav) return;
+      const btns = $$('button', nav);
+      const line = $('.tabs-nav-line', nav);
+      const panels = $$(':scope > .tab-panel', tabsRoot);
+      if (!btns.length || !panels.length) return;
 
-    const activate = (index) => {
-      btns.forEach((b, i) => b.classList.toggle('is-active', i === index));
-      panels.forEach((p, i) => p.classList.toggle('is-active', i === index));
-      if (line && btns[index]) {
-        const btn = btns[index];
-        line.style.width = btn.offsetWidth + 'px';
-        line.style.right = (nav.offsetWidth - btn.offsetLeft - btn.offsetWidth) + 'px';
-      }
-    };
+      const activate = (index) => {
+        btns.forEach((b, i) => b.classList.toggle('is-active', i === index));
+        panels.forEach((p, i) => p.classList.toggle('is-active', i === index));
+        if (line && btns[index]) {
+          const btn = btns[index];
+          line.style.width = btn.offsetWidth + 'px';
+          line.style.right = (nav.offsetWidth - btn.offsetLeft - btn.offsetWidth) + 'px';
+          line.style.left = 'auto';
+        }
+      };
 
-    btns.forEach((btn, i) => btn.addEventListener('click', () => activate(i)));
-    activate(0);
-    window.addEventListener('resize', () => {
-      const active = btns.findIndex(b => b.classList.contains('is-active'));
-      if (active >= 0) activate(active);
+      btns.forEach((btn, i) => btn.addEventListener('click', () => activate(i)));
+      activate(btns.findIndex(b => b.classList.contains('is-active')) || 0);
+      window.addEventListener('resize', () => {
+        const active = btns.findIndex(b => b.classList.contains('is-active'));
+        if (active >= 0) activate(active);
+      }, { passive: true });
     });
   }
 
@@ -191,37 +195,6 @@
       });
     }, { threshold: 0.5 });
     bars.forEach(b => obs.observe(b));
-  }
-
-  /* Testimonials */
-  function initTestimonials() {
-    const track = $('.testimonials-track');
-    if (!track) return;
-    const slides = $$('.testimonial-slide', track);
-    let idx = 0;
-
-    const visible = () => window.innerWidth >= 1024 ? 3 : window.innerWidth >= 768 ? 2 : 1;
-    const update = () => {
-      const v = visible();
-      const max = Math.max(0, slides.length - v);
-      idx = Math.min(idx, max);
-      track.style.transform = `translateX(${-idx * (slides[0]?.offsetWidth || 0)}px)`;
-    };
-
-    $('[data-slide-prev]')?.addEventListener('click', () => { idx = Math.max(0, idx - 1); update(); });
-    $('[data-slide-next]')?.addEventListener('click', () => {
-      const max = Math.max(0, slides.length - visible());
-      idx = Math.min(max, idx + 1);
-      update();
-    });
-    window.addEventListener('resize', update, { passive: true });
-    update();
-
-    setInterval(() => {
-      const max = Math.max(0, slides.length - visible());
-      idx = idx >= max ? 0 : idx + 1;
-      update();
-    }, 5000);
   }
 
   /* Countdown */
@@ -282,7 +255,6 @@
     initTabs();
     initCounters();
     initProgress();
-    initTestimonials();
     initCountdown();
     initCookie();
     initAnchors();

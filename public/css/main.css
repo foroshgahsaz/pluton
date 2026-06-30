@@ -1434,25 +1434,6 @@ body.cursor-hover .circle-cursor-inner svg { width: 14px; height: 14px; opacity:
   border-bottom: 1px solid var(--clb-color-border);
 }
 
-/* Search popup */
-.search-popup {
-  position: fixed; inset: 0; z-index: 2100;
-  background: rgba(17,16,19,0.95);
-  display: flex; align-items: center; justify-content: center;
-  visibility: hidden; opacity: 0;
-  transition: all var(--transition);
-}
-.search-popup.is-open { visibility: visible; opacity: 1; }
-.search-popup .close-bar { position: absolute; top: 2rem; left: 2rem; }
-.search-popup .holder { width: min(600px, 90vw); }
-.search-form { display: flex; gap: 1rem; border-bottom: 2px solid rgba(255,255,255,0.2); padding-bottom: 0.5rem; }
-.search-form input {
-  flex: 1; background: transparent; border: none;
-  font-size: 1.5rem; color: #fff; outline: none;
-}
-.search-form input::placeholder { color: rgba(255,255,255,0.4); }
-.search-form button { color: #fff; }
-
 /* Cookie notification */
 .notification {
   position: fixed; bottom: 1.5rem; left: 1.5rem; right: 1.5rem;

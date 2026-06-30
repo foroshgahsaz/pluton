@@ -85,7 +85,7 @@
     $('.menu-overlay .overlay-bg')?.addEventListener('click', close);
   }
 
-  /* Menu overlay */
+  /* Accordion */
   function initAccordion() {
     $$('.accordion-item').forEach(item => {
       const trigger = $('.accordion-trigger', item);

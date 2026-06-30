@@ -238,7 +238,9 @@ body.cursor-hover .circle-cursor-inner svg { width: 14px; height: 14px; opacity:
   top: 0; left: 0; right: 0;
   z-index: 1001;
   height: var(--subheader-h);
-  background: color-mix(in srgb, var(--clb-color-grey) 6%, transparent);
+  background: color-mix(in srgb, var(--clb-color-white) 92%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--clb-color-border);
   font-size: 0.8125rem;
   color: var(--clb-color-grey);

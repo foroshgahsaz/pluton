@@ -76,7 +76,6 @@
   --clb-button-height: 3rem;
   --clb-button-height-large: 3.5rem;
   --clb-grid-gutter: 1rem;
-  --subheader-h: 2.25rem;
   --header-h: 4.5rem;
   --container: 1344px;
   --container-gutter: 1rem;
@@ -236,33 +235,10 @@ body.cursor-hover .circle-cursor-inner svg { width: 14px; height: 14px; opacity:
 .social-bar a { display: block; margin-top: 0.5rem; transition: color var(--transition); }
 .social-bar a:hover { color: var(--clb-color-primary); }
 
-/* Subheader */
-.subheader {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  z-index: 1001;
-  height: var(--subheader-h);
-  background: color-mix(in srgb, var(--clb-color-white) 92%, transparent);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--clb-color-border);
-  font-size: 0.8125rem;
-  color: var(--clb-color-grey);
-}
-.subheader .page-container {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 100%;
-}
-.subheader ul { display: flex; align-items: center; gap: 1.5rem; }
-.subheader a:hover { color: var(--clb-color-primary); }
-.subheader b { color: var(--clb-text-color); font-weight: 500; }
-
 /* Header */
 .header {
   position: fixed;
-  top: var(--subheader-h);
+  top: 0;
   left: 0; right: 0;
   z-index: 1000;
   height: var(--header-h);
@@ -363,8 +339,29 @@ body.cursor-hover .circle-cursor-inner svg { width: 14px; height: 14px; opacity:
 .button.-large { height: var(--clb-button-height-large); padding: 0 2rem; font-size: 1rem; }
 .button.-text { background: transparent; color: var(--clb-text-color); }
 .button.-text:hover { background: transparent; color: var(--clb-color-primary); transform: none; }
-.button.-purchase { background: var(--clb-color-primary); }
-.button.-purchase:hover { background: var(--clb-color-primary-hover); }
+.button.-contact { background: var(--clb-color-primary); }
+.button.-contact:hover { background: var(--clb-color-primary-hover); }
+
+.contact-button-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.contact-button-wrap .button { position: relative; z-index: 1; }
+.contact-wave {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--clb-border-radius-full);
+  border: 2px solid color-mix(in srgb, var(--clb-color-primary) 55%, transparent);
+  animation: contact-wave 2.4s cubic-bezier(0, 0, 0.2, 1) infinite;
+  pointer-events: none;
+}
+.contact-wave:nth-child(2) { animation-delay: 1.2s; }
+@keyframes contact-wave {
+  0% { transform: scale(1); opacity: 0.75; }
+  100% { transform: scale(2.15); opacity: 0; }
+}
 .button.-secondary {
   background: #edf1f4;
   color: #283742;
@@ -376,7 +373,7 @@ body.cursor-hover .circle-cursor-inner svg { width: 14px; height: 14px; opacity:
 }
 
 /* Main content offset */
-.site-content { padding-top: calc(var(--subheader-h) + var(--header-h)); }
+.site-content { padding-top: var(--header-h); }
 
 /* Badge */
 .badge {
@@ -1212,6 +1209,18 @@ body.cursor-hover .circle-cursor-inner svg { width: 14px; height: 14px; opacity:
 /* Responsive */
 @media (max-width: 1024px) {
   .nav { display: none; }
+  .header-wrap {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+  }
+  .left-part { justify-self: start; }
+  .right-part { justify-self: end; }
+  .header-wrap .branding {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
   .hero-grid, .section-grid, .cta-grid { grid-template-columns: 1fr; }
   .features-grid { grid-template-columns: repeat(2, 1fr); }
   .features-card.-purple { grid-column: 1 / -1; }
@@ -1226,7 +1235,6 @@ body.cursor-hover .circle-cursor-inner svg { width: 14px; height: 14px; opacity:
 @media (max-width: 768px) {
   .service-tables, .pricing-grid, .stats-grid, .blog-grid,
   .features-grid, .features-col, .cta-stats, .form-row, .footer-widgets { grid-template-columns: 1fr; }
-  .subheader .-right { display: none; }
   .elements-bar.left { display: none; }
   .hero-buttons { flex-direction: column; }
   .hero-buttons .button { width: 100%; }
@@ -1238,5 +1246,6 @@ body.cursor-hover .circle-cursor-inner svg { width: 14px; height: 14px; opacity:
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  .contact-wave { animation: none !important; display: none; }
   html { scroll-behavior: auto; }
 }

@@ -300,11 +300,33 @@ input, select, textarea { font-family: inherit; }
 }
 .gallery-item:hover img { transform: scale(1.02); }
 
-/* دسکتاپ: همه تصاویر زیر هم + تامبنیل کناری */
+/* دسکتاپ: تامبنیل ثابت چپ + اسکرول فقط تصاویر */
 @media (min-width: 1025px) {
+  .gallery-layout {
+    flex-direction: row-reverse;
+    align-items: flex-start;
+  }
+  .gallery-thumbs {
+    position: sticky;
+    top: calc(var(--p-header-h) + 1.5rem);
+    align-self: flex-start;
+    z-index: 2;
+  }
   .gallery-slider-viewport {
-    overflow: visible;
+    max-height: calc(100vh - var(--p-header-h) - 3rem);
+    overflow-x: hidden;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+    scrollbar-width: thin;
+    scrollbar-color: var(--p-grey-light) transparent;
     background: transparent;
+  }
+  .gallery-slider-viewport::-webkit-scrollbar {
+    width: 4px;
+  }
+  .gallery-slider-viewport::-webkit-scrollbar-thumb {
+    background: var(--p-grey-light);
+    border-radius: 4px;
   }
   .gallery-stack {
     gap: 1rem;

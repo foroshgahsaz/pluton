@@ -63,8 +63,6 @@
     const thumbs = $$('.gallery-thumb', thumbsWrap);
     if (!viewport || !stack || !thumbs.length || !items.length) return;
 
-    let desktopObserver = null;
-
     function isSliderMode() {
       return window.matchMedia('(max-width: 1024px)').matches;
     }
@@ -86,51 +84,45 @@
       if (isSliderMode()) {
         item.scrollIntoView({ behavior: 'smooth', inline: 'nearest', block: 'nearest' });
       } else {
-        item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        const top = item.offsetTop - stack.offsetTop;
+        viewport.scrollTo({ top, behavior: 'smooth' });
       }
     }
 
     function syncFromScroll() {
-      if (!isSliderMode()) return;
       const vpRect = viewport.getBoundingClientRect();
-      const vpCenter = vpRect.left + vpRect.width / 2;
-      let closest = 0;
-      let minDist = Infinity;
-      items.forEach((item, i) => {
-        const r = item.getBoundingClientRect();
-        const center = r.left + r.width / 2;
-        const dist = Math.abs(center - vpCenter);
-        if (dist < minDist) {
-          minDist = dist;
-          closest = i;
-        }
-      });
-      if (closest !== gallerySlideIndex) setThumbActive(closest);
+      if (isSliderMode()) {
+        const vpCenter = vpRect.left + vpRect.width / 2;
+        let closest = 0;
+        let minDist = Infinity;
+        items.forEach((item, i) => {
+          const r = item.getBoundingClientRect();
+          const center = r.left + r.width / 2;
+          const dist = Math.abs(center - vpCenter);
+          if (dist < minDist) {
+            minDist = dist;
+            closest = i;
+          }
+        });
+        if (closest !== gallerySlideIndex) setThumbActive(closest);
+      } else {
+        const vpCenter = vpRect.top + vpRect.height / 2;
+        let closest = 0;
+        let minDist = Infinity;
+        items.forEach((item, i) => {
+          const r = item.getBoundingClientRect();
+          const center = r.top + r.height / 2;
+          const dist = Math.abs(center - vpCenter);
+          if (dist < minDist) {
+            minDist = dist;
+            closest = i;
+          }
+        });
+        if (closest !== gallerySlideIndex) setThumbActive(closest);
+      }
     }
 
     let scrollTimer;
-
-    function updateDesktopActiveThumb() {
-      if (isSliderMode()) return;
-      const viewportCenter = window.innerHeight * 0.4;
-      let closest = 0;
-      let minDist = Infinity;
-      items.forEach((item, i) => {
-        const r = item.getBoundingClientRect();
-        const center = r.top + r.height / 2;
-        const dist = Math.abs(center - viewportCenter);
-        if (dist < minDist) {
-          minDist = dist;
-          closest = i;
-        }
-      });
-      if (closest !== gallerySlideIndex) setThumbActive(closest);
-    }
-
-    function setupDesktopScroll() {
-      if (isSliderMode()) return;
-      updateDesktopActiveThumb();
-    }
 
     thumbs.forEach((thumb) => {
       thumb.addEventListener('click', () => {
@@ -143,29 +135,21 @@
       scrollTimer = setTimeout(syncFromScroll, 60);
     }, { passive: true });
 
-    window.addEventListener('scroll', () => {
-      clearTimeout(scrollTimer);
-      scrollTimer = setTimeout(() => {
-        if (isSliderMode()) syncFromScroll();
-        else updateDesktopActiveThumb();
-      }, 80);
-    }, { passive: true });
-
     function onResize() {
       if (isSliderMode()) {
         viewport.scrollLeft = 0;
+        viewport.scrollTop = 0;
         goToSlide(gallerySlideIndex);
       } else {
         viewport.scrollLeft = 0;
         setThumbActive(gallerySlideIndex);
-        updateDesktopActiveThumb();
+        syncFromScroll();
       }
     }
 
     window.addEventListener('resize', onResize, { passive: true });
 
     setThumbActive(0);
-    setupDesktopScroll();
 
     return { goToSlide, getIndex: () => gallerySlideIndex };
   }
@@ -210,7 +194,7 @@
       $('[data-variation="color"] .swatch[data-value="red"]')?.classList.add('is-active');
       $('[data-variation="store"] .swatch[data-value="covina"]')?.classList.add('is-active');
       updateMainImage('images/oh_product1.01.webp');
-      gallerySliderApi?.goToSlide(0);
+      galleryApi?.goToSlide(0);
       updatePrice();
     });
   }

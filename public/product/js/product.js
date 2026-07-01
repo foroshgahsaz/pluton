@@ -63,13 +63,14 @@
     const thumbs = $$('.gallery-thumb', thumbsWrap);
     if (!viewport || !stack || !thumbs.length || !items.length) return;
 
+    let desktopObserver = null;
+
     function isSliderMode() {
       return window.matchMedia('(max-width: 1024px)').matches;
     }
 
-    function setActive(index) {
+    function setThumbActive(index) {
       gallerySlideIndex = index;
-      items.forEach((item, i) => item.classList.toggle('is-active', i === index));
       thumbs.forEach((t, i) => t.classList.toggle('is-active', i === index));
       const activeThumb = thumbs[index];
       if (activeThumb && isSliderMode()) {
@@ -79,10 +80,14 @@
 
     function goToSlide(index) {
       if (index < 0 || index >= items.length) return;
-      setActive(index);
-      if (!isSliderMode()) return;
+      setThumbActive(index);
       const item = items[index];
-      if (item) item.scrollIntoView({ behavior: 'smooth', inline: 'nearest', block: 'nearest' });
+      if (!item) return;
+      if (isSliderMode()) {
+        item.scrollIntoView({ behavior: 'smooth', inline: 'nearest', block: 'nearest' });
+      } else {
+        item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
     }
 
     function syncFromScroll() {
@@ -100,7 +105,31 @@
           closest = i;
         }
       });
-      if (closest !== gallerySlideIndex) setActive(closest);
+      if (closest !== gallerySlideIndex) setThumbActive(closest);
+    }
+
+    let scrollTimer;
+
+    function updateDesktopActiveThumb() {
+      if (isSliderMode()) return;
+      const viewportCenter = window.innerHeight * 0.4;
+      let closest = 0;
+      let minDist = Infinity;
+      items.forEach((item, i) => {
+        const r = item.getBoundingClientRect();
+        const center = r.top + r.height / 2;
+        const dist = Math.abs(center - viewportCenter);
+        if (dist < minDist) {
+          minDist = dist;
+          closest = i;
+        }
+      });
+      if (closest !== gallerySlideIndex) setThumbActive(closest);
+    }
+
+    function setupDesktopScroll() {
+      if (isSliderMode()) return;
+      updateDesktopActiveThumb();
     }
 
     thumbs.forEach((thumb) => {
@@ -109,22 +138,34 @@
       });
     });
 
-    let scrollTimer;
     viewport.addEventListener('scroll', () => {
       clearTimeout(scrollTimer);
       scrollTimer = setTimeout(syncFromScroll, 60);
     }, { passive: true });
 
-    window.addEventListener('resize', () => {
-      if (!isSliderMode()) {
-        viewport.scrollLeft = 0;
-        setActive(gallerySlideIndex);
-      } else {
-        goToSlide(gallerySlideIndex);
-      }
+    window.addEventListener('scroll', () => {
+      clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(() => {
+        if (isSliderMode()) syncFromScroll();
+        else updateDesktopActiveThumb();
+      }, 80);
     }, { passive: true });
 
-    setActive(0);
+    function onResize() {
+      if (isSliderMode()) {
+        viewport.scrollLeft = 0;
+        goToSlide(gallerySlideIndex);
+      } else {
+        viewport.scrollLeft = 0;
+        setThumbActive(gallerySlideIndex);
+        updateDesktopActiveThumb();
+      }
+    }
+
+    window.addEventListener('resize', onResize, { passive: true });
+
+    setThumbActive(0);
+    setupDesktopScroll();
 
     return { goToSlide, getIndex: () => gallerySlideIndex };
   }

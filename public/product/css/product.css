@@ -292,17 +292,28 @@ input, select, textarea { font-family: inherit; }
   overflow: hidden;
   background: var(--p-fill);
   cursor: zoom-in;
-  display: none;
 }
-.gallery-item.is-active { display: block; }
 .gallery-item img {
   width: 100%;
   height: auto;
-  aspect-ratio: 1;
-  object-fit: cover;
   transition: transform 0.5s ease;
 }
 .gallery-item:hover img { transform: scale(1.02); }
+
+/* دسکتاپ: همه تصاویر زیر هم + تامبنیل کناری */
+@media (min-width: 1025px) {
+  .gallery-slider-viewport {
+    overflow: visible;
+    background: transparent;
+  }
+  .gallery-stack {
+    gap: 1rem;
+  }
+  .gallery-item img {
+    aspect-ratio: auto;
+    object-fit: contain;
+  }
+}
 .share-bar {
   position: absolute;
   top: 1rem;
@@ -1065,7 +1076,10 @@ input, select, textarea { font-family: inherit; }
     scroll-snap-align: center;
     border-radius: 0;
   }
-  .gallery-item.is-active { display: block; }
+  .gallery-item img {
+    aspect-ratio: 1;
+    object-fit: cover;
+  }
   .lightbox-btn { bottom: 1rem; }
 }
 @media (max-width: 640px) {

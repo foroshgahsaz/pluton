@@ -45,6 +45,8 @@
   function updateMainImage(src) {
     const main = $('#main-image');
     if (main && src) main.src = src;
+    const firstThumb = $('.gallery-thumb[data-index="0"] img');
+    if (firstThumb && src) firstThumb.src = src;
     const firstSlide = $('.gallery-item[data-index="0"] img');
     if (firstSlide && src) firstSlide.src = src;
     if (galleryImages[0] !== undefined && src) galleryImages[0] = src;
@@ -52,37 +54,35 @@
 
   let gallerySlideIndex = 0;
 
-  /* Gallery mobile slider */
-  function initGallerySlider() {
+  /* Gallery thumbs + slider */
+  function initGallery() {
     const viewport = $('#gallery-viewport');
     const stack = $('#gallery');
-    const dotsWrap = $('.gallery-dots');
+    const thumbsWrap = $('#gallery-thumbs');
     const items = $$('.gallery-item', stack);
-    if (!viewport || !stack || !dotsWrap || !items.length) return;
-
-    dotsWrap.innerHTML = '';
-    items.forEach((_, i) => {
-      const dot = document.createElement('button');
-      dot.type = 'button';
-      dot.className = 'gallery-dot' + (i === 0 ? ' is-active' : '');
-      dot.setAttribute('aria-label', 'اسلاید ' + (i + 1));
-      dot.addEventListener('click', () => goToSlide(i));
-      dotsWrap.appendChild(dot);
-    });
-
-    const dots = $$('.gallery-dot', dotsWrap);
+    const thumbs = $$('.gallery-thumb', thumbsWrap);
+    if (!viewport || !stack || !thumbs.length || !items.length) return;
 
     function isSliderMode() {
       return window.matchMedia('(max-width: 1024px)').matches;
     }
 
-    function goToSlide(index) {
+    function setActive(index) {
       gallerySlideIndex = index;
+      items.forEach((item, i) => item.classList.toggle('is-active', i === index));
+      thumbs.forEach((t, i) => t.classList.toggle('is-active', i === index));
+      const activeThumb = thumbs[index];
+      if (activeThumb && isSliderMode()) {
+        activeThumb.scrollIntoView({ behavior: 'smooth', inline: 'nearest', block: 'nearest' });
+      }
+    }
+
+    function goToSlide(index) {
+      if (index < 0 || index >= items.length) return;
+      setActive(index);
       if (!isSliderMode()) return;
       const item = items[index];
-      if (!item) return;
-      item.scrollIntoView({ behavior: 'smooth', inline: 'nearest', block: 'nearest' });
-      dots.forEach((d, i) => d.classList.toggle('is-active', i === index));
+      if (item) item.scrollIntoView({ behavior: 'smooth', inline: 'nearest', block: 'nearest' });
     }
 
     function syncFromScroll() {
@@ -100,9 +100,14 @@
           closest = i;
         }
       });
-      gallerySlideIndex = closest;
-      dots.forEach((d, i) => d.classList.toggle('is-active', i === closest));
+      if (closest !== gallerySlideIndex) setActive(closest);
     }
+
+    thumbs.forEach((thumb) => {
+      thumb.addEventListener('click', () => {
+        goToSlide(parseInt(thumb.dataset.index, 10) || 0);
+      });
+    });
 
     let scrollTimer;
     viewport.addEventListener('scroll', () => {
@@ -113,17 +118,18 @@
     window.addEventListener('resize', () => {
       if (!isSliderMode()) {
         viewport.scrollLeft = 0;
-        dots.forEach((d, i) => d.classList.toggle('is-active', i === 0));
-        gallerySlideIndex = 0;
+        setActive(gallerySlideIndex);
       } else {
         goToSlide(gallerySlideIndex);
       }
     }, { passive: true });
 
+    setActive(0);
+
     return { goToSlide, getIndex: () => gallerySlideIndex };
   }
 
-  let gallerySliderApi = null;
+  let galleryApi = null;
 
   /* Mobile menu */
   function initMenu() {
@@ -141,7 +147,7 @@
         selectedColor = btn.dataset.value;
         if (btn.dataset.image) {
           updateMainImage(btn.dataset.image);
-          gallerySliderApi?.goToSlide(0);
+          galleryApi?.goToSlide(0);
         }
         updatePrice();
       });
@@ -252,7 +258,7 @@
     if (!box || !img) return;
 
     const open = (index) => {
-      lightboxIndex = typeof index === 'number' ? index : (gallerySliderApi?.getIndex() ?? 0);
+      lightboxIndex = typeof index === 'number' ? index : (galleryApi?.getIndex() ?? 0);
       img.src = galleryImages[lightboxIndex] || galleryImages[0];
       box.classList.add('is-open');
       box.setAttribute('aria-hidden', 'false');
@@ -274,7 +280,7 @@
       item.addEventListener('click', () => {
         const idx = parseInt(item.dataset.index, 10) || 0;
         if (window.matchMedia('(max-width: 1024px)').matches) {
-          gallerySliderApi?.goToSlide(idx);
+          galleryApi?.goToSlide(idx);
         }
         open(idx);
       });
@@ -330,7 +336,7 @@
     initLightbox();
     initStickyBar();
     initVideo();
-    gallerySliderApi = initGallerySlider();
+    galleryApi = initGallery();
     updatePrice();
   });
 })();

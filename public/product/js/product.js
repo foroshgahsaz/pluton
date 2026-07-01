@@ -45,7 +45,85 @@
   function updateMainImage(src) {
     const main = $('#main-image');
     if (main && src) main.src = src;
+    const firstSlide = $('.gallery-item[data-index="0"] img');
+    if (firstSlide && src) firstSlide.src = src;
+    if (galleryImages[0] !== undefined && src) galleryImages[0] = src;
   }
+
+  let gallerySlideIndex = 0;
+
+  /* Gallery mobile slider */
+  function initGallerySlider() {
+    const viewport = $('#gallery-viewport');
+    const stack = $('#gallery');
+    const dotsWrap = $('.gallery-dots');
+    const items = $$('.gallery-item', stack);
+    if (!viewport || !stack || !dotsWrap || !items.length) return;
+
+    dotsWrap.innerHTML = '';
+    items.forEach((_, i) => {
+      const dot = document.createElement('button');
+      dot.type = 'button';
+      dot.className = 'gallery-dot' + (i === 0 ? ' is-active' : '');
+      dot.setAttribute('aria-label', 'اسلاید ' + (i + 1));
+      dot.addEventListener('click', () => goToSlide(i));
+      dotsWrap.appendChild(dot);
+    });
+
+    const dots = $$('.gallery-dot', dotsWrap);
+
+    function isSliderMode() {
+      return window.matchMedia('(max-width: 1024px)').matches;
+    }
+
+    function goToSlide(index) {
+      gallerySlideIndex = index;
+      if (!isSliderMode()) return;
+      const item = items[index];
+      if (!item) return;
+      item.scrollIntoView({ behavior: 'smooth', inline: 'nearest', block: 'nearest' });
+      dots.forEach((d, i) => d.classList.toggle('is-active', i === index));
+    }
+
+    function syncFromScroll() {
+      if (!isSliderMode()) return;
+      const vpRect = viewport.getBoundingClientRect();
+      const vpCenter = vpRect.left + vpRect.width / 2;
+      let closest = 0;
+      let minDist = Infinity;
+      items.forEach((item, i) => {
+        const r = item.getBoundingClientRect();
+        const center = r.left + r.width / 2;
+        const dist = Math.abs(center - vpCenter);
+        if (dist < minDist) {
+          minDist = dist;
+          closest = i;
+        }
+      });
+      gallerySlideIndex = closest;
+      dots.forEach((d, i) => d.classList.toggle('is-active', i === closest));
+    }
+
+    let scrollTimer;
+    viewport.addEventListener('scroll', () => {
+      clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(syncFromScroll, 60);
+    }, { passive: true });
+
+    window.addEventListener('resize', () => {
+      if (!isSliderMode()) {
+        viewport.scrollLeft = 0;
+        dots.forEach((d, i) => d.classList.toggle('is-active', i === 0));
+        gallerySlideIndex = 0;
+      } else {
+        goToSlide(gallerySlideIndex);
+      }
+    }, { passive: true });
+
+    return { goToSlide, getIndex: () => gallerySlideIndex };
+  }
+
+  let gallerySliderApi = null;
 
   /* Mobile menu */
   function initMenu() {
@@ -61,7 +139,10 @@
         $$('[data-variation="color"] .swatch').forEach(s => s.classList.remove('is-active'));
         btn.classList.add('is-active');
         selectedColor = btn.dataset.value;
-        if (btn.dataset.image) updateMainImage(btn.dataset.image);
+        if (btn.dataset.image) {
+          updateMainImage(btn.dataset.image);
+          gallerySliderApi?.goToSlide(0);
+        }
         updatePrice();
       });
     });
@@ -82,6 +163,7 @@
       $('[data-variation="color"] .swatch[data-value="red"]')?.classList.add('is-active');
       $('[data-variation="store"] .swatch[data-value="covina"]')?.classList.add('is-active');
       updateMainImage('images/oh_product1.01.webp');
+      gallerySliderApi?.goToSlide(0);
       updatePrice();
     });
   }
@@ -170,7 +252,7 @@
     if (!box || !img) return;
 
     const open = (index) => {
-      lightboxIndex = index;
+      lightboxIndex = typeof index === 'number' ? index : (gallerySliderApi?.getIndex() ?? 0);
       img.src = galleryImages[lightboxIndex] || galleryImages[0];
       box.classList.add('is-open');
       box.setAttribute('aria-hidden', 'false');
@@ -189,7 +271,13 @@
     };
 
     $$('.gallery-item').forEach(item => {
-      item.addEventListener('click', () => open(parseInt(item.dataset.index, 10) || 0));
+      item.addEventListener('click', () => {
+        const idx = parseInt(item.dataset.index, 10) || 0;
+        if (window.matchMedia('(max-width: 1024px)').matches) {
+          gallerySliderApi?.goToSlide(idx);
+        }
+        open(idx);
+      });
     });
 
     $('[data-lightbox-open]')?.addEventListener('click', () => open(0));
@@ -242,6 +330,7 @@
     initLightbox();
     initStickyBar();
     initVideo();
+    gallerySliderApi = initGallerySlider();
     updatePrice();
   });
 })();

@@ -598,8 +598,12 @@ body.cursor-hover .circle-cursor-inner svg { width: 14px; height: 14px; opacity:
 }
 .form-success {
   margin-top: 0.75rem;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  background: rgba(12, 206, 107, 0.14);
   color: #0a7a3e;
   font-size: 0.875rem;
+  font-weight: 600;
   line-height: 1.7;
 }
 .avatar.-letter {

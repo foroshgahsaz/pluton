@@ -285,6 +285,26 @@
     setInterval(tick, 1000);
   }
 
+  /* Static request form */
+  function initForms() {
+    const form = $('.contact-form-box');
+    if (!form) return;
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const btn = $('button[type="submit"]', form);
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = 'درخواست ثبت شد';
+      }
+      if (!$('.form-success', form)) {
+        const note = document.createElement('p');
+        note.className = 'form-success';
+        note.textContent = 'درخواست شما ثبت شد. برای ساخت اکانت، دامنه سایت و پنل انتخابی را با همین مشخصات هماهنگ می‌کنیم.';
+        form.appendChild(note);
+      }
+    });
+  }
+
   /* Cookie */
   function initCookie() {
     const n = $('.notification');
@@ -322,6 +342,7 @@
     initCounters();
     initProgress();
     initCountdown();
+    initForms();
     initCookie();
     initAnchors();
   });
